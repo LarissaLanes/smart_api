@@ -1,0 +1,84 @@
+create database dbApiSmartCart;
+
+use dbApiSmartCart;
+
+create table cliente (
+id int primary key auto_increment,
+nome varchar(256) not null,
+cpf varchar(256) not null unique,
+email varchar(70) not null unique,
+senha varchar(25)
+);
+
+create table carrinho (
+id int primary key auto_increment,
+data_pedido date,
+valor_total float,
+cliente_id int,
+foreign key(cliente_id) references cliente(id)
+);
+
+create table vendedor (
+id int primary key auto_increment,
+razao_social varchar(255) not null unique,
+nome_fantasia varchar(255) not null unique,
+email varchar(255) not null unique,
+senha varchar(255),
+cnpj varchar(255) not null unique,
+comissao int
+);
+
+create table produto (
+id int primary key auto_increment,
+descricao varchar(45) not null,
+preco float not null,
+imagem varchar(200) not null,
+status_produto enum('EM ESTOQUE','ESGOTADO'),
+vendedor_id int,
+foreign key (vendedor_id) references vendedor(id),
+categoria_id enum('BOLAS','CAMISAS DE TIME','INFANTIL','EQUIPAMENTOS DE PROTECAO','TENIS','CHUTEIRAS')
+);
+
+CREATE TABLE item_carrinho (
+    quantidade varchar(45),
+    total float,
+    carrinho_id int,
+    produto_id int,
+    PRIMARY KEY (carrinho_id, produto_id),  -- Corrigindo a chave primária
+    FOREIGN KEY (carrinho_id) REFERENCES carrinho(id),
+    FOREIGN KEY (produto_id) REFERENCES produto(id)
+);
+
+
+
+
+INSERT INTO cliente (nome, cpf, email, senha)
+VALUES 
+('João Silva', '123.456.789-01', 'joao@email.com', 'senha123'),
+('Maria Oliveira', '987.654.321-01', 'maria@email.com', 'senha456'),
+('Carlos Pereira', '111.222.333-44', 'carlos@email.com', 'senha789');
+
+INSERT INTO vendedor (razao_social, nome_fantasia, email, senha, cnpj, comissao)
+VALUES 
+('Empresa ABC LTDA', 'ABC Sports', 'abc@email.com', 'senha123', '123.456.789/0001-01', 10),
+('Comércio XYZ', 'XYZ Equipamentos', 'xyz@email.com', 'senha456', '987.654.321/0001-02', 15),
+('Loja Esportiva 123', 'Esporte 123', 'esporte123@email.com', 'senha789', '111.222.333/0001-03', 12);
+
+INSERT INTO produto (descricao, preco, imagem, status_produto, vendedor_id, categoria_id)
+VALUES 
+('Bola de Futebol Nike', 59.99, 'bola_nike.jpg', 'EM ESTOQUE', 1, 'BOLAS'),
+('Camisa do Time XYZ', 89.99, 'camisa_xyz.jpg', 'EM ESTOQUE', 2, 'CAMISAS DE TIME'),
+('Tênis Esportivo Adidas', 129.99, 'tenis_adidas.jpg', 'ESGOTADO', 3, 'TENIS');
+
+INSERT INTO item_carrinho (quantidade, total, carrinho_id, produto_id)
+VALUES 
+('2', 119.98, 1, 1),  -- 2 Bolas de Futebol Nike no carrinho
+('1', 89.99, 2, 2),   -- 1 Camisa do Time XYZ no carrinho
+('3', 389.97, 3, 3);  -- 3 Pares de Tênis Esportivo Adidas no carrinho
+
+INSERT INTO carrinho (data_pedido, valor_total, cliente_id)
+VALUES 
+('2023-11-26', 209.97, 1),  -- Carrinho para Cliente 1 em 26 de novembro de 2023
+('2023-11-25', 89.99, 2),   -- Carrinho para Cliente 2 em 25 de novembro de 2023
+('2023-11-24', 779.94, 3);  -- Carrinho para Cliente 3 em 24 de novembro de 2023
+
